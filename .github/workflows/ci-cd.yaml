@@ -24,14 +24,18 @@ jobs:
     
     - name: Install dependencies
       run: |
+        cd my-app
         python -m pip install --upgrade pip
         pip install flask pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
     - name: Run tests
       run: |
+        cd my-app
         # Add your test commands here
         python -m pytest tests/ || echo "No tests found"
+        # You can also run a simple Flask app test
+        python -c "import main; print('Flask app imports successfully')" || echo "No main.py or import issues"
 
   build-and-push:
     needs: test
@@ -46,10 +50,10 @@ jobs:
         find . -type f -name "*.py" -o -name "Dockerfile" -o -name "*.txt" | head -20
         echo "=== Root directory ==="
         ls -la
-        echo "=== App directory ==="
-        ls -la app/ || echo "App directory not found"
+        echo "=== My-app directory ==="
+        ls -la my-app/ || echo "My-app directory not found"
         echo "=== Dockerfile content ==="
-        cat Dockerfile
+        cat my-app/Dockerfile || echo "Dockerfile not found in my-app/"
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -75,8 +79,8 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: .
-        file: ./Dockerfile
+        context: ./my-app
+        file: ./my-app/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
@@ -84,7 +88,7 @@ jobs:
         cache-to: type=gha,mode=max
     
     - name: Image digest
-      run: echo ${{ steps.build.outputs.digest }}
+      run: echo ${{ steps.meta.outputs.digest }}
 
   deploy:
     needs: build-and-push
@@ -96,6 +100,8 @@ jobs:
     
     - name: Deploy to production
       run: |
+        cd my-app
         echo "Add your deployment steps here"
         # Example: kubectl apply -f k8s/production/
         # Or run your deploy script: ./scripts/deploy.sh
+        # Make scripts executable first: chmod +x scripts/deploy.sh
