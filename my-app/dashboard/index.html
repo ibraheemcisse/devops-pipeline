@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI/CD Pipeline Metrics Dashboard</title>
+    <title>DevOps Pipeline Dashboard - made by Ibrahim Cisse</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
@@ -34,6 +34,14 @@
             font-size: 2.5rem;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .repo-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
         }
         
         .metrics-grid {
@@ -131,6 +139,24 @@
         .status-warning { background: #f59e0b; color: white; }
         .status-running { background: #3b82f6; color: white; }
         
+        .github-link {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .github-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
         .refresh-btn {
             position: fixed;
             bottom: 30px;
@@ -155,109 +181,124 @@
             .charts-section {
                 grid-template-columns: 1fr;
             }
+            .github-link {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: inline-block;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <div class="header">
-            <h1>🚀 CI/CD Pipeline Metrics</h1>
-            <p>Real-time monitoring of your production pipeline</p>
+            <h1>🚀 DevOps Pipeline Dashboard</h1>
+            <div class="repo-info">
+                <strong>📦 Repository:</strong> ibraheemcisse/devops-pipeline<br>
+                <strong>🐍 Application:</strong> Flask Python App<br>
+                <strong>🏗️ Pipeline:</strong> GitHub Actions → Docker Hub → Production
+            </div>
         </div>
+        
+        <a href="https://github.com/ibraheemcisse/devops-pipeline" class="github-link" target="_blank">
+            📱 View on GitHub
+        </a>
         
         <div class="metrics-grid">
             <div class="metric-card">
                 <div class="metric-title">
-                    ⚡ Deployment Frequency
+                    🚀 Deployments Today
                 </div>
-                <div class="metric-value" id="deploymentFreq">12.5</div>
-                <div class="metric-change positive">+15% this week</div>
-                <small>deployments per day</small>
+                <div class="metric-value" id="deploymentsToday">3</div>
+                <div class="metric-change positive">Latest: 15 mins ago</div>
+                <small>successful deployments</small>
             </div>
             
             <div class="metric-card">
                 <div class="metric-title">
-                    ⏱️ Lead Time
+                    ⏱️ Last Build Time
                 </div>
-                <div class="metric-value" id="leadTime">2.3</div>
-                <div class="metric-change positive">-8% this week</div>
-                <small>hours (commit to production)</small>
+                <div class="metric-value" id="lastBuildTime">2.4</div>
+                <div class="metric-change positive">-0.3 mins from avg</div>
+                <small>minutes (test → deploy)</small>
             </div>
             
             <div class="metric-card">
                 <div class="metric-title">
-                    🎯 Success Rate
+                    🎯 Success Rate (7d)
                 </div>
-                <div class="metric-value" id="successRate">98.7%</div>
-                <div class="metric-change positive">+2.1% this month</div>
+                <div class="metric-value" id="successRate">94.2%</div>
+                <div class="metric-change positive">18/19 builds passed</div>
                 <small>pipeline success rate</small>
             </div>
             
             <div class="metric-card">
                 <div class="metric-title">
-                    🔧 Mean Time to Recovery
+                    📊 Docker Image Size
                 </div>
-                <div class="metric-value" id="mttr">23</div>
-                <div class="metric-change positive">-12% this month</div>
-                <small>minutes average recovery</small>
+                <div class="metric-value" id="imageSize">127</div>
+                <div class="metric-change positive">-15MB optimized</div>
+                <small>MB (ibraheemcisse/my-app:latest)</small>
             </div>
         </div>
         
         <div class="charts-section">
             <div class="chart-card">
-                <div class="chart-title">Pipeline Performance Trends</div>
+                <div class="chart-title">Build Performance (Last 7 Days)</div>
                 <canvas id="performanceChart"></canvas>
             </div>
             
             <div class="chart-card">
-                <div class="chart-title">Build Duration by Stage</div>
+                <div class="chart-title">Pipeline Stage Duration</div>
                 <canvas id="buildChart"></canvas>
             </div>
         </div>
         
         <div class="chart-card">
-            <div class="chart-title">🔄 Recent Pipeline Runs</div>
-            <div class="pipeline-status">
+            <div class="chart-title">🔄 Recent Pipeline Activity</div>
+            <div class="pipeline-status" id="pipelineStatus">
                 <div class="status-item">
                     <div class="status-icon status-success">✓</div>
                     <div>
-                        <div><strong>main #245</strong></div>
-                        <div>Deploy to production - 2m 34s</div>
-                        <small>2 minutes ago</small>
+                        <div><strong>main branch - Build #47</strong></div>
+                        <div>✅ Tests → 🐳 Docker Build → 🚀 Deploy</div>
+                        <small>Completed 15 minutes ago (2m 24s)</small>
                     </div>
                 </div>
                 
                 <div class="status-item">
                     <div class="status-icon status-success">✓</div>
                     <div>
-                        <div><strong>develop #244</strong></div>
-                        <div>Deploy to staging - 1m 52s</div>
-                        <small>15 minutes ago</small>
+                        <div><strong>main branch - Build #46</strong></div>
+                        <div>✅ Tests → 🐳 Docker Build → 🚀 Deploy</div>
+                        <small>Completed 2 hours ago (2m 41s)</small>
                     </div>
                 </div>
                 
                 <div class="status-item">
-                    <div class="status-icon status-running">⏳</div>
+                    <div class="status-icon status-failure">✗</div>
                     <div>
-                        <div><strong>feature/auth #243</strong></div>
-                        <div>Running tests...</div>
-                        <small>Running for 45s</small>
+                        <div><strong>feature/dashboard - Build #45</strong></div>
+                        <div>❌ Failed at Docker build stage</div>
+                        <small>Failed 4 hours ago (1m 12s)</small>
                     </div>
                 </div>
                 
                 <div class="status-item">
                     <div class="status-icon status-success">✓</div>
                     <div>
-                        <div><strong>main #242</strong></div>
-                        <div>Deploy to production - 3m 12s</div>
-                        <small>1 hour ago</small>
+                        <div><strong>main branch - Build #44</strong></div>
+                        <div>✅ Tests → 🐳 Docker Build → 🚀 Deploy</div>
+                        <small>Completed 6 hours ago (2m 18s)</small>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <button class="refresh-btn" onclick="refreshData()">
+    <button class="refresh-btn" onclick="fetchGitHubData()">
         🔄 Refresh
     </button>
     
@@ -269,18 +310,18 @@
             data: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 datasets: [{
-                    label: 'Success Rate %',
-                    data: [98, 97, 99, 98, 100, 97, 99],
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }, {
                     label: 'Build Time (min)',
-                    data: [3.2, 2.8, 3.1, 2.9, 2.5, 3.0, 2.7],
+                    data: [2.8, 3.2, 2.1, 2.9, 2.4, 2.7, 2.4],
                     borderColor: '#667eea',
                     backgroundColor: 'rgba(102, 126, 234, 0.1)',
                     fill: true,
+                    tension: 0.4
+                }, {
+                    label: 'Success Rate %',
+                    data: [100, 100, 80, 100, 100, 100, 100],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: false,
                     tension: 0.4,
                     yAxisID: 'y1'
                 }]
@@ -297,15 +338,23 @@
                         type: 'linear',
                         display: true,
                         position: 'left',
-                        min: 95,
-                        max: 100
+                        min: 0,
+                        max: 5,
+                        title: {
+                            display: true,
+                            text: 'Build Time (minutes)'
+                        }
                     },
                     y1: {
                         type: 'linear',
                         display: true,
                         position: 'right',
                         min: 0,
-                        max: 5,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Success Rate %'
+                        },
                         grid: {
                             drawOnChartArea: false,
                         },
@@ -314,19 +363,19 @@
             }
         });
         
-        // Build Duration Chart
+        // Build Duration Chart - Your actual pipeline stages
         const buildCtx = document.getElementById('buildChart').getContext('2d');
         const buildChart = new Chart(buildCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Tests', 'Build', 'Security Scan', 'Deploy'],
+                labels: ['Python Tests', 'Docker Build', 'Docker Push', 'Deploy'],
                 datasets: [{
-                    data: [45, 25, 15, 15],
+                    data: [35, 40, 15, 10],
                     backgroundColor: [
-                        '#3b82f6',
-                        '#10b981',
-                        '#f59e0b',
-                        '#ef4444'
+                        '#3b82f6', // Blue for tests
+                        '#10b981', // Green for build
+                        '#f59e0b', // Orange for push
+                        '#8b5cf6'  // Purple for deploy
                     ],
                     borderWidth: 0
                 }]
@@ -341,59 +390,75 @@
             }
         });
         
-        // Simulated real-time data updates
-        function updateMetrics() {
-            const successRate = document.getElementById('successRate');
-            const deploymentFreq = document.getElementById('deploymentFreq');
-            const leadTime = document.getElementById('leadTime');
-            const mttr = document.getElementById('mttr');
+        // Simulate fetching real GitHub Actions data
+        async function fetchGitHubData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.textContent = '⏳ Fetching...';
             
-            // Simulate small variations
-            const currentSuccess = parseFloat(successRate.textContent);
-            const newSuccess = (currentSuccess + (Math.random() - 0.5) * 0.2).toFixed(1);
-            successRate.textContent = newSuccess + '%';
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
             
-            const currentFreq = parseFloat(deploymentFreq.textContent);
-            const newFreq = (currentFreq + (Math.random() - 0.5) * 0.5).toFixed(1);
-            deploymentFreq.textContent = newFreq;
-            
-            const currentLead = parseFloat(leadTime.textContent);
-            const newLead = (currentLead + (Math.random() - 0.5) * 0.2).toFixed(1);
-            leadTime.textContent = newLead;
-            
-            const currentMttr = parseInt(mttr.textContent);
-            const newMttr = Math.max(15, currentMttr + Math.floor((Math.random() - 0.5) * 5));
-            mttr.textContent = newMttr;
-        }
-        
-        function refreshData() {
+            // Update metrics with realistic variations
             updateMetrics();
             
-            // Update charts with new data
-            const newPerformanceData = Array.from({length: 7}, () => 
-                Math.floor(Math.random() * 5) + 95
-            );
-            performanceChart.data.datasets[0].data = newPerformanceData;
+            // Update pipeline status
+            updateRecentBuilds();
             
-            const newBuildData = Array.from({length: 7}, () => 
-                (Math.random() * 2 + 2).toFixed(1)
-            );
-            performanceChart.data.datasets[1].data = newBuildData;
-            
-            performanceChart.update();
-            
-            // Show refresh feedback
-            const btn = document.querySelector('.refresh-btn');
             btn.textContent = '✅ Updated';
             setTimeout(() => {
                 btn.textContent = '🔄 Refresh';
             }, 2000);
         }
         
-        // Auto-refresh every 30 seconds
-        setInterval(updateMetrics, 30000);
+        function updateMetrics() {
+            // Simulate realistic metric updates
+            const deploymentsToday = Math.floor(Math.random() * 5) + 1;
+            document.getElementById('deploymentsToday').textContent = deploymentsToday;
+            
+            const buildTime = (Math.random() * 1.5 + 1.5).toFixed(1);
+            document.getElementById('lastBuildTime').textContent = buildTime;
+            
+            const successRate = (Math.random() * 10 + 85).toFixed(1);
+            document.getElementById('successRate').textContent = successRate + '%';
+            
+            const imageSize = Math.floor(Math.random() * 50 + 100);
+            document.getElementById('imageSize').textContent = imageSize;
+        }
         
-        // Add some animations on load
+        function updateRecentBuilds() {
+            const statusItems = document.querySelectorAll('.status-item');
+            const builds = [
+                { status: 'success', branch: 'main', number: Math.floor(Math.random() * 10) + 47 },
+                { status: 'success', branch: 'main', number: Math.floor(Math.random() * 10) + 40 },
+                { status: Math.random() > 0.8 ? 'failure' : 'success', branch: 'feature/update', number: Math.floor(Math.random() * 10) + 35 },
+                { status: 'success', branch: 'main', number: Math.floor(Math.random() * 10) + 30 }
+            ];
+            
+            statusItems.forEach((item, index) => {
+                if (builds[index]) {
+                    const build = builds[index];
+                    const iconEl = item.querySelector('.status-icon');
+                    const textEl = item.querySelector('div:nth-child(2)');
+                    
+                    iconEl.className = `status-icon status-${build.status}`;
+                    iconEl.textContent = build.status === 'success' ? '✓' : '✗';
+                    
+                    const duration = (Math.random() * 2 + 1).toFixed(0);
+                    const timeAgo = Math.floor(Math.random() * 120) + 10;
+                    
+                    textEl.innerHTML = `
+                        <div><strong>${build.branch} branch - Build #${build.number}</strong></div>
+                        <div>${build.status === 'success' ? '✅ Tests → 🐳 Docker Build → 🚀 Deploy' : '❌ Failed at build stage'}</div>
+                        <small>${build.status === 'success' ? 'Completed' : 'Failed'} ${timeAgo} minutes ago (${duration}m ${Math.floor(Math.random() * 60)}s)</small>
+                    `;
+                }
+            });
+        }
+        
+        // Auto-refresh every 60 seconds
+        setInterval(updateMetrics, 60000);
+        
+        // Add animations on load
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.metric-card, .chart-card, .status-item');
             cards.forEach((card, index) => {
@@ -407,23 +472,8 @@
             });
         });
         
-        // Simulate pipeline status updates
-        function updatePipelineStatus() {
-            const statusItems = document.querySelectorAll('.status-item');
-            const statuses = ['success', 'failure', 'warning', 'running'];
-            const icons = ['✓', '✗', '⚠', '⏳'];
-            
-            statusItems.forEach((item, index) => {
-                if (Math.random() > 0.8) { // 20% chance to update
-                    const randomStatus = Math.floor(Math.random() * statuses.length);
-                    const iconEl = item.querySelector('.status-icon');
-                    iconEl.className = `status-icon status-${statuses[randomStatus]}`;
-                    iconEl.textContent = icons[randomStatus];
-                }
-            });
-        }
-        
-        setInterval(updatePipelineStatus, 10000);
+        // Initial data load
+        setTimeout(updateMetrics, 1000);
     </script>
 </body>
 </html>
