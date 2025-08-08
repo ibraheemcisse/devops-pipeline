@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  dashboard:
+    build:
+      context: ./my-app
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    container_name: devops-dashboard
+    restart: unless-stopped
+    
+  # Add more services here as your pipeline grows
+  # database:
+  #   image: postgres:13
+  #   environment:
+  #     POSTGRES_DB: devops
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  
+# volumes:
+#   postgres_data:
